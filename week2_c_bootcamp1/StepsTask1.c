@@ -53,21 +53,51 @@ int main() {
         perror("");
         return 1;
     }
+    char date[11];
+	char time[6];
+	char steps[20];
+
 
     while(fgets(line, 200,input)!=NULL){
-        printf("%s",line);
-        
+        tokeniseRecord(line,",",date,time,steps);
+        strcpy(Fitness[counter].date, date);
+        strcpy(Fitness[counter].time, time);
+        Fitness[counter].steps = atoi(steps);
+        counter++;
+    
     }
+    
+    
+    printf("Number of records in file: %d\n",counter);
+    
+    for (int i = 0; i<3; i++){
+ 
+        printf("%s/%s/%d\n",Fitness[i].date,Fitness[i].time,Fitness[i].steps);
+        
 
 
 
-    char date[300];
-    char time[300];
-    char steps[300];
+    }
     
 
 
-    
 
+
+    return 0;
 
 }
+   
+
+
+
+
+
+
+
+
+    
+
+
+    
+
+
