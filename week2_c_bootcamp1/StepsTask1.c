@@ -57,8 +57,7 @@ int main() {
 	char time[6];
 	char steps[20];
 
-
-    while(fgets(line, 200,input)!=NULL){
+while(fgets(line, 200,input)!=NULL){
         tokeniseRecord(line,",",date,time,steps);
         strcpy(Fitness[counter].date, date);
         strcpy(Fitness[counter].time, time);
@@ -66,6 +65,7 @@ int main() {
         counter++;
     
     }
+    
     
     
     printf("Number of records in file: %d\n",counter);
