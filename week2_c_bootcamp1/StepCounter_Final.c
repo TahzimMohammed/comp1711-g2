@@ -10,6 +10,11 @@
 char date[11];
 char time[6];
 char steps[20];
+FILE* file;
+int Low_Step = 100000;
+int High_Step = 0;
+FITNESS_DATA Fitness[59];
+
 
 // Global variables for filename and FITNESS_DATA array
 
@@ -47,67 +52,138 @@ void tokeniseRecord(const char *input, const char *delimiter,
 
 // Complete the main function
 
-int Choice_A(char File[100]){
+FILE* Choice_A(char File[100], FILE *file){
     char* filename = File;
-    FILE*input = fopen(filename, "r");
-    if (input==NULL){
+    file = fopen(filename, "r");
+    if (file==NULL){
         printf("Error: Could not find or open the file.\n");
         perror("");
-        return 1;
     }
     else{
         printf("File Succesfully loaded\n");
     }
+    return file;
 }
 
-int Choice_B(){
+int Choice_B(FILE *file){
     int buffer_size = 200;
     char line[buffer_size];
     int counter = 0;
 
-    FILE*input = fopen("FitnessData_2023.csv", "r");
-    if (input==NULL){
-        perror("");
-        return 1;
-    }
-    
-
-    
-    
+    while(fgets(line, buffer_size,file)!=NULL){
+        counter++;
+     }
     printf("Total Records: %d\n", counter);
-
 }
-
-int Choice_C(){
-    FITNESS_DATA Fitness[59];
+void Choice_CD(char x, FILE *file){
     int buffer_size = 200;
     char line[buffer_size];
     int counter = 0;
-    char Fewest[100];
 
-    FILE*input = fopen("FitnessData_2023.csv", "r");
-    if (input==NULL){
-        perror("");
-        return 1;
-    }
   
-    while(fgets(line, 200,input)!=NULL){
+    while(fgets(line, buffer_size,file)!=NULL){
         tokeniseRecord(line,",",date,time,steps);
         strcpy(Fitness[counter].date, date);
         strcpy(Fitness[counter].time, time);
         Fitness[counter].steps = atoi(steps);
+        counter++;
     }
-    
-
+    if (x == 'C' || x == 'c'){
+         for (int i = 0;i<counter;i++){
+            if (Fitness[i].steps<Low_Step){
+            Low_Step = Fitness[i].steps;
+        }  
+    }
+    for (int i = 0; i<counter; i++){
+        if (Fitness[i].steps == Low_Step){
+            printf("Fewest Steps: %s %s\n", Fitness[i].date, Fitness[i].time);
+        }
+    }   
+    }
+    else if (x == 'D' || x == 'd'){
+        for (int i = 0;i<counter;i++){
+        if (Fitness[i].steps>High_Step){
+            High_Step = Fitness[i].steps;
+        }
+    }
+    for (int i = 0; i<counter;i++){
+        if (Fitness[i].steps == High_Step){
+            printf("Largest Steps: %s %s\n", Fitness[i].date, Fitness[i].time);
+        }
+    }
+    }
+}
+int Choice_E(FILE *file){
+    int buffer_size = 200;
+    char line[buffer_size];
+    int counter = 0;
+    int High_Step = 0;
+    int arr[200] = {};
+    int sum = 0;
+   
+  
+    while(fgets(line, 200,file)!=NULL){
+        tokeniseRecord(line,",",date,time,steps);
+        strcpy(Fitness[counter].date, date);
+        strcpy(Fitness[counter].time, time);
+        Fitness[counter].steps = atoi(steps);
+        counter++;
+    }
+    for (int i = 0; i<counter; i++){
+        arr[i] = Fitness[i].steps;
+    }
+    for (int i = 0; i<counter; i++){
+        sum = sum + arr[i];   
+    }
+    printf("Mean Step Count: %d\n", (sum/counter));
 }
 
+int Choice_F(FILE *file){
+    int buffer_size = 200;
+    char line[buffer_size];
+    int counter = 0;
+    int High_Step = 0;
+    int check = 0;
+    int checking = 0;
+    char *Start;
+    char *SDate;
+    char *EDate;
+    char *End;
+
+  
+    while(fgets(line, 200,file)!=NULL){
+        tokeniseRecord(line,",",date,time,steps);
+        strcpy(Fitness[counter].date, date);
+        strcpy(Fitness[counter].time, time);
+        Fitness[counter].steps = atoi(steps);
+        counter++;
+    }
+    for (int i = 0; i<counter; i++){
+        if (Fitness[i].steps>500){
+            check++;
+            if (Fitness[i+1].steps<=500){
+                if(check>checking){
+                    checking = check;
+                    Start = Fitness[(i-check)+1].time;
+                    SDate = Fitness[(i-check)+1].date;
+                    End = Fitness[i].time;
+                    EDate = Fitness[i].date;
+                    check = 0;
+                }    
+
+            }
+        }
+
+    }
+    printf("Longest period start: %s %s\n", SDate,Start);
+    printf("Longest period end: %s %s\n", EDate,End);    
+}
 
 int main(){
     bool test = true;
     //int x = 0;
     char choice;
-    char input[100];
-    FITNESS_DATA Fitness[59];
+    char filename[100];
 
     while (test != false){
         printf("Menu Options:\n");
@@ -122,27 +198,39 @@ int main(){
         printf("Enter Choice: ");
         scanf(" %c", &choice);
 
-        if (choice == 'A'){
+        if (choice == 'A' || choice == 'a'){
             printf("Input file name: ");
-            scanf(" %s", input);
-            Choice_A(input);
+            scanf(" %s", filename);
+            file = Choice_A(filename, file);
+            if (file == NULL){ 
+                return 1;
+            }
         }
 
-        else if (choice == 'B'){
-            Choice_B();    
+        else if (choice == 'B' || choice == 'b'){
+            Choice_B(file);    
         }
 
-        else if (choice =='C'){
-            printf("Third Option\n");
+        else if (choice == 'C' || choice == 'c'){
+            Choice_CD(choice, file);
+        }
+        else if (choice == 'D' || choice == 'd'){
+            Choice_CD(choice, file);
         }
 
-        else if (choice == 'Q'){
+        else if (choice == 'E' || choice == 'e'){
+            Choice_E(file);
+        }
+        else if (choice == 'F' || choice == 'f'){
+            Choice_F(file);
+        }
+
+        else if (choice == 'Q' || choice == 'q'){
             break;
-        }
-        
+        }     
+        rewind(file);   
     }
-    return 0;
-   
+    return 0;   
 }
 
 
