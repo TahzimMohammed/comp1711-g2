@@ -113,19 +113,45 @@ void Choice_CD(char x, FILE *file){
     }
     }
 }
-
+void Choice_E(FILE *file){
+    int buffer_size = 200;
+    char line[buffer_size];
+    int counter = 0;
+    int High_Step = 0;
+    int arr[200] = {};
+    float sum = 0;
+    float mean;
+   
+  
+    while(fgets(line, 200,file)!=NULL){
+        tokeniseRecord(line,",",date,time,steps);
+        strcpy(Fitness[counter].date, date);
+        strcpy(Fitness[counter].time, time);
+        Fitness[counter].steps = atoi(steps);
+        counter++;
+    }
+    for (int i = 0; i<counter; i++){
+        arr[i] = Fitness[i].steps;
+    }
+    for (int i = 0; i<counter; i++){
+        sum = sum + arr[i];   
+    }
+    mean = sum/counter;
+    printf("Mean step count: %.0f\n", mean);
+   
+}
 
 void Choice_F(FILE *file){
     int buffer_size = 200;
     char line[buffer_size];
     int counter = 0;
-    int High_Step = 0;
     int check = 0;
     int checking = 0;
     char *Start;
     char *SDate;
-    char *EDate;
     char *End;
+    char *EDate;
+    
 
   
     while(fgets(line, 200,file)!=NULL){
@@ -194,31 +220,7 @@ int main(){
         }
 
         else if (choice == 'E' || choice == 'e'){
-            int buffer_size = 200;
-            char line[buffer_size];
-            int counter = 0;
-            int High_Step = 0;
-            int arr[200] = {};
-            float sum = 0;
-            float mean;
-   
-  
-            while(fgets(line, 200,file)!=NULL){
-                tokeniseRecord(line,",",date,time,steps);
-                strcpy(Fitness[counter].date, date);
-                strcpy(Fitness[counter].time, time);
-                Fitness[counter].steps = atoi(steps);
-                counter++;
-            }
-            for (int i = 0; i<counter; i++){
-                arr[i] = Fitness[i].steps;
-            }
-            for (int i = 0; i<counter; i++){
-                sum = sum + arr[i];   
-            }
-            mean = sum/counter;
-            printf("Mean step count: %.0f\n", mean);
-   
+            Choice_E(file);
         }
         else if (choice == 'F' || choice == 'f'){
             Choice_F(file);
@@ -226,6 +228,9 @@ int main(){
 
         else if (choice == 'Q' || choice == 'q'){
             break;
+        }
+        else{
+            printf("Invalid Choice. Try again. \n");
         }     
         rewind(file);   
     }
